@@ -8,6 +8,7 @@ import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
+import java.util.Iterator;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -15,6 +16,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import org.apache.commons.io.IOUtils;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
@@ -64,7 +66,7 @@ public class DhisJsonParser {
         //Install all-trusting host name verifier
         HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
             
-        String ouid = "mu9d9jNXA6Y";
+        String ouid = "mu9d9jNXA6Y";//make dynamic
         String urlr = "https://test.hiskenya.org/api/analytics.json?"
                 + "dimension=dx:KzIawX7xMAv;YWGxnnD9KXb;jaPrPmor6WV;svJzNw1TdaI;"
                 + "eEpRB9ra4jj;rcfDxB8Hpuu;ypJG5mczJNT;mmqXlRfsXlf;FCmhDa4kaMp;"
@@ -77,7 +79,7 @@ public class DhisJsonParser {
             URL obj = new URL(urlr);
             HttpsURLConnection conn = (HttpsURLConnection) obj.openConnection();
             System.out.println(conn.toString());
-             String redirect = conn.getHeaderField("Location");
+            String redirect = conn.getHeaderField("Location");
              
 //            while (redirect != null) {
 //                URL obj1 = new URL(redirect);
@@ -107,9 +109,19 @@ public class DhisJsonParser {
             String genreJson = IOUtils.toString(in);
             System.out.println(genreJson);
             
-            JSONObject genreJsonObject = (JSONObject) JSONValue.parseWithException(genreJson);
-            //get the name
-            System.out.println(genreJsonObject.get("metaData"));
+                JSONObject genreJsonObject = (JSONObject) JSONValue.parseWithException(genreJson);
+            JSONArray dataElementValues = (JSONArray) genreJsonObject.get("rows");
+            Iterator  values = dataElementValues.iterator();
+            System.out.printf("%s\t%s\t%s\t\n", "DataElementId","Period","Value");
+            while(values.hasNext()){
+                JSONArray array = (JSONArray) values.next();
+                String dataElementId = (String) array.get(0);
+                String period  = (String) array.get(1);
+                String value = (String) array.get(2);
+                System.out.printf("%s\t%s\t%s\t\n", dataElementId, period, value);
+            }
+           // System.out.println(genreJsonObject.get("metaData"));
+            //System.out.println(genreJsonObject.get("rows"));
         } catch (IOException e) {
             e.printStackTrace();
         }
