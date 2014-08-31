@@ -1,13 +1,17 @@
 package dhisjsonparser;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -15,6 +19,10 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import org.apache.commons.io.IOUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -31,6 +39,10 @@ public class DhisJsonParser {
      * @throws java.net.MalformedURLException
      */
     
+    //Create a blank workbook
+        static XSSFWorkbook workbook = new XSSFWorkbook();
+        //Create a blank sheet
+        static XSSFSheet sheet = workbook.createSheet("moh711values");
     /*For test purpose only. Will later be fetched from the DB*/
     static String[] ouid = {"HrFWseAGXzN","d23ZMyDAOEE","zpPVs8bYduv",
         "LkV5kJMdakx","NFVVCDVuAkk","UOKEv02h8eL","TT3kyK0Iam5","GOxptySBE5j","hZqDvGaLiEr",
@@ -117,29 +129,43 @@ public class DhisJsonParser {
 //            //parse json data and display results
 //            dataElementsParser(genreJson, ouid[i]);
 //        }
+        
+        /* updates moh711 dataelements*/
+        //Moh711DataElementsUpdater.parser(dataSetsProcessBuilder(urlBuilder("201304","HrFWseAGXzN")));
+        
         for(String p :periods){
             for(String org:ouid ){
-                dataElementsParser(dataSetsProcessBuilder(urlBuilder(p, org)), org);               
+                //dataElementsParser(dataSetsProcessBuilder(urlBuilder(p, org)), org);               
             }
         }
     }
+    
+    //processes the json string
     public static void dataElementsParser(String genreJson, String ouid) throws ParseException{
             JSONObject genreJsonObject = (JSONObject) JSONValue.parseWithException(genreJson);
             JSONArray dataElementValues = (JSONArray) genreJsonObject.get("rows");
             Iterator  values = dataElementValues.iterator();
+            String[] tempArray = new String[4];
+            int row = 0;
             while(values.hasNext()){
                 JSONArray array = (JSONArray) values.next();
                 String dataElementId = (String) array.get(0);
                 String period  = (String) array.get(1);
                 String value = (String) array.get(2);
+                tempArray[0] = ouid;
+                tempArray[1] = dataElementId;
+                tempArray[2] = period;
+                tempArray[3] = value;
                 System.out.printf("%s\t%s\t%s\t%s\t\n", ouid,dataElementId, period, value);
+                //writeToExcel(tempArray,row);
+                row++;
             }
     }
     
     public static String dataSetsProcessBuilder(String urlr) throws IOException{
         String username = "fegati";
             String pass = "Hiskenya7";
-            ProcessBuilder p = new ProcessBuilder("curl","--insecure","--noproxy", "*","-X",
+            ProcessBuilder p = new ProcessBuilder("curl","--insecure","--proxy", "https://p15%2F1317%2F2011%40students:inx%40uon@proxy.uonbi.ac.ke:80","-X",
             "GET", "-u", username + ":" + pass, urlr);
             final Process shell = p.start();
             InputStream in = shell.getInputStream();
@@ -157,5 +183,27 @@ public class DhisJsonParser {
         
         return url;
     }
+    
+        private static void writeToExcel(String[] tempArray, int rowx) {        
+        Row row = sheet.createRow(rowx);
+        int cellnum = 0;
+        for(int i = 0; i < tempArray.length; i++){
+              Cell cell = row.createCell(cellnum++);
+              cell.setCellValue(tempArray[i]);
+        }
+        
+        //write the workbook in a filesystem
+        FileOutputStream out;
+        try {
+            out = new FileOutputStream(new File("/home/trusty/dhis/moh711data.xlsx"));
+            workbook.write(out);
+            out.close();
+            System.out.println("Successful");
+        } catch (FileNotFoundException  ex) {
+            Logger.getLogger(DhisJsonParser.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(DhisJsonParser.class.getName()).log(Level.SEVERE, null, ex);
+        }        
+        }
 
 }
