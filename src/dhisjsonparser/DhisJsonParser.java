@@ -9,6 +9,7 @@ import java.net.MalformedURLException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,37 +44,12 @@ public class DhisJsonParser {
         static XSSFWorkbook workbook = new XSSFWorkbook();
         //Create a blank sheet
         static XSSFSheet sheet = workbook.createSheet("moh711values");
+        
     /*For test purpose only. Will later be fetched from the DB*/
-    static String[] ouid = {"HrFWseAGXzN","d23ZMyDAOEE","zpPVs8bYduv",
-        "LkV5kJMdakx","NFVVCDVuAkk","UOKEv02h8eL","TT3kyK0Iam5","GOxptySBE5j","hZqDvGaLiEr",
-        "eXQGo7rOHzG","HAXZM3YNUmN","XVRGfr0CuHg","VT72TxMgtu7","fNVYEyxjawL","t75KnRpIucJ",
-        "irwLEN2bSMG","sg4BJjECrJ2","LGC7iKM2acq","eCRyPPTMFs9","ZosyfWIzXWl","x9hGRq2zvep","uBfCuhllvg3",
-        "Q7WmVW0gNmv","MXJHIvxYgrD","zRRAVOH7s28","XIo0DuIga6G","syMX95GoW0g","ajV4U9XRbBN","bvUg2vPkLWw"};
+    static String[] ouid = OrgunitsUpdater.fetchOrgunitIds();
     
     /*For test purpose only. Will later be fetched from the DB*/
-    static String[] moh711dataElements = {"KzIawX7xMAv;","ypJG5mczJNT;","mmqXlRfsXlf;","TkwjrwghYVF;",
-            "AY5ZPkANII8;","Kx64gGqaFVq;","QDD62ZsbVnT;","SI8igpKYhVG;","TLiUok6zK9w;","bhFvc6EeCTC;",
-            "pSIDJ79UquD;","qa1IrxISrSJ;","sMqM8DwiAaj;","OiuBpHJw4kf;","UsyFvMBxvn0;","IV9vOoO4Mo4;",
-            "M9wNpvfC8wb;","FwsTJpdxT4C;","Q5H6IEbD5ak;","eNcsljfoUKW;","EHGBrVPiG3N;","N9VDFWZAumw;",
-            "TJwizRWebWZ;","FCmhDa4kaMp;","rcfDxB8Hpuu;","svJzNw1TdaI;","eEpRB9ra4jj;","YWGxnnD9KXb;",
-            "jaPrPmor6WV;","SDIS7W1zhPW;","LNOJnResD5m;","f0yEn4dedjn;","xAAEwRrU8EH;","PggNwT09D3U;",
-            "j6EvRpVJONr;","vvoE9dLHFgg;","yQFyyQBhXQf;","cV4qoKSYiBs;","R6oylU6CF31;","PLN5zlML149;",
-            "qrTk1w6Y5Bk;","rS1DZr9EZGG;","jFpKjQupwHf;","oiZ7R6su8ZX;","ia50XRXor21;","RK2r7Sgr2rX;",
-            "PZb5Bk5JKSw;","jI6RYlclUgr;","KGRCdw30ILH;","KuMX8VqCejs;","zVTIzkATPDS;","gAKCshSgSH3;",
-            "TxhvipxGJoA;","tF5z3LnQvWu;","cTY2tTKwUqd;","bmFMhQa3G2v;","I6U6idiMIOC;","hxXwYIgT8rI;",
-            "BRzqHfgsmn9;","uvNayIO0zrN;","oq4vCrIRVxb;","P0gfmezl6IV;","lNNrYXr0Dnz;","f1yrtCEf1HP;",
-            "DuBH6qPPdaO;","k8qXy4LyyJj;","VihTrdMMli8;","uvBuzBj0AbL;","rAZBTMa7Jy3;","GAr6xu6f1n7;",
-            "oC215Fl92uW;","NeH2XNZ4B78;","nspwXhqQaAz;","xsh8ECnUJIk;","kMe8cor2UxQ;","syjjPqXbjTm;",
-            "Mn3FQ9r5Wtp;","xO4Kh84Bwlk;","M4RzpOew1Im;","uxYaacfgY22;","ND0kGuYLszx;","JglserSm6IQ;",
-            "k8Y2rcga2FJ;","CvoE5s0xLLf;","uHM6lzLXDBd;","s0Zi5NpklJN;","YZdSnMLgiAV;","Yq2bq0zZokF;",
-            "UqKC1DJnymn;","d4KC4RIwpKH;","zIiDTYhg8K5;","OPII6vOKimx;","h6Bcw3YvuRR;","BQmcVE8fex4;",
-            "MKICatwGRPz;","KtZWJoV27fM;","eIvn8VgI5Zx;","eBHhfupqMHz;","hNsd8cQIYun;","JzM8Q9sIc9i;",
-            "f9vesk5d4IY;","KmLPBDUi48L;","cKxrOyX8yfM;","dnNfHX89udH;","Hh4daYAcb49;","P15TN95Ie3F;",
-            "otgQMOXuyIn;","BgFeMs6gQ7E;","xjlkLTQhA2b;","Fz0LzxMT1vV;","Sb8ICydVNVd;","sdA7bJkZc9E;",
-            "Nqt6rz4tqnm;","Gp38RIEAOCb;","GyIfu4qpXJM;","GlGolXdf6gr;","aTBJvDJQAF0;","eM7FcVVzvz1;",
-            "j1Vu1ZUZK0s;","Jln7Ggzq0qJ;","T59McmnP4FJ;","YDZlFPpGO2W;","C8ZgpIWef1p;","NQOwqGwcBnN;",
-            "GfubvZs2ES6;","Uhldghgqs2D;","rxhsRqFckMf;","jF2Uk71SaYC;","qMybCnYBkNY;","nOC15N8wS01;",
-            "Uj7NxkhB71r;","j4bfChlEqWb;","IjrWNuj9rzt;","jFrSw8UkNQ4"};
+    static String[] moh711dataElements = Moh711DataElementsUpdater.fetchDatalementIds();
     
     public static void main(String[] args) throws MalformedURLException, NoSuchAlgorithmException, KeyManagementException, IOException, ParseException {
         /*To avoid javax.net.ssl.SSLHandshakeException: java.security.cert.
@@ -132,7 +108,7 @@ public class DhisJsonParser {
         
         /* updates moh711 dataelements*/
         //Moh711DataElementsUpdater.parser(dataSetsProcessBuilder(urlBuilder("201304","HrFWseAGXzN")));
-        
+        System.out.println(Arrays.toString(ouid));
         for(String p :periods){
             for(String org:ouid ){
                 //dataElementsParser(dataSetsProcessBuilder(urlBuilder(p, org)), org);               

@@ -95,7 +95,7 @@ public class Moh711DataElementsUpdater {
             //determine number of rows in in the resultset
             rs.last(); //move cursor to the last row
             int rowcount = rs.getRow();
-            array = new String[rowcount];
+            array = new String[rowcount - 1];
             rs.first();//return cursor to the first row
             int count = 0;
             while(rs.next()){
@@ -105,6 +105,8 @@ public class Moh711DataElementsUpdater {
                 count++;
             }
             rs.close();
+            conn.close();
+            pstmt.close();
         } catch (ClassNotFoundException | SQLException ex) {
             Logger.getLogger(Moh711DataElementsUpdater.class.getName()).log(Level.SEVERE, null, ex);
         }
