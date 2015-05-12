@@ -139,8 +139,8 @@ public class DhisJsonParser {
     }
     
     public static String dataSetsProcessBuilder(String urlr) throws IOException{
-        String username = "fegati";
-            String pass = "Hiskenya7";
+        String username = "";
+            String pass = "";
             ProcessBuilder p = new ProcessBuilder("curl","--insecure","--proxy", "https://p15%2F1317%2F2011%40students:inx%40uon@proxy.uonbi.ac.ke:80","-X",
             "GET", "-u", username + ":" + pass, urlr);
             final Process shell = p.start();
